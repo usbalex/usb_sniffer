@@ -14,13 +14,13 @@ module top_core
     input           ulpi_nxt_i,
     output          ulpi_stp_o,
 
-    // FTDI
-    inout           ftdi_rxf,
-    inout           ftdi_txe,
-    inout           ftdi_siwua,
-    inout           ftdi_wr,
-    inout           ftdi_rd,
-    inout [7:0]     ftdi_d,
+//    // FTDI
+//    inout           ftdi_rxf,
+//    inout           ftdi_txe,
+//    inout           ftdi_siwua,
+//    inout           ftdi_wr,
+//    inout           ftdi_rd,
+//    inout [7:0]     ftdi_d,
 
     // MISC
     output [7:0]    leds
@@ -89,7 +89,8 @@ u_ulpi
 );
 
 //-----------------------------------------------------------------
-// FTDI Interface
+//// FTDI Interface
+// JTAG Interface
 //-----------------------------------------------------------------
 wire[31:0]  ftdi_address_w;
 wire[31:0]  ftdi_data_w;
@@ -101,19 +102,21 @@ wire        ftdi_cyc_w;
 wire        ftdi_stall_w = 1'b0;
 wire        ftdi_ack_w;
 
-ftdi_if
-u_ftdi
+//ftdi_if
+//u_ftdi
+jtag_if
+u_jtag
 (
     .clk_i(clk_i),
     .rst_i(rst_i),
 
-    // FTDI (async FIFO interface)
-    .ftdi_rxf_i(ftdi_rxf),
-    .ftdi_txe_i(ftdi_txe),
-    .ftdi_siwua_o(ftdi_siwua),
-    .ftdi_wr_o(ftdi_wr),
-    .ftdi_rd_o(ftdi_rd),
-    .ftdi_d_io(ftdi_d),
+//    // FTDI (async FIFO interface)
+//    .ftdi_rxf_i(ftdi_rxf),
+//    .ftdi_txe_i(ftdi_txe),
+//    .ftdi_siwua_o(ftdi_siwua),
+//    .ftdi_wr_o(ftdi_wr),
+//    .ftdi_rd_o(ftdi_rd),
+//    .ftdi_d_io(ftdi_d),
 
     .gp_o(ftdi_gpio_w),
     .gp_i(ftdi_gpio_w),
