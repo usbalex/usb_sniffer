@@ -44,6 +44,7 @@
 #include "usb_helpers.h"
 #include "usb_sniffer.h"
 #include "usb_sniffer_regs.h"
+#include "altera_jtag_hw.h"
 
 //-----------------------------------------------------------------
 // Defines

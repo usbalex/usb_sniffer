@@ -104,7 +104,7 @@ wire        ftdi_ack_w;
 
 //ftdi_if
 //u_ftdi
-jtag_if
+altera_jtag_if
 u_jtag
 (
     .clk_i(clk_i),

@@ -8,13 +8,20 @@ TARGET     ?= usb_sniffer
 # Options
 CFLAGS      = 
 LDFLAGS     = 
-LIBS        = -lftdi
+#LIBS        = -lftdi
+#LIBS        = -ljtag_atlantic -ljtag_client
+#LIBS        = -L. -ljtag_atlantic -ljtag_client
+LIBS        = -L /opt/altera/13.1/quartus/linux64 -ljtag_atlantic -ljtag_client
 
 ARGS       += 
 
 # Source Files
-SRC = $(wildcard *.c)
-OBJ = $(patsubst %.c,%.o,$(SRC)) 
+SRC_C   = $(wildcard *.c)
+SRC_CPP = $(wildcard *.cpp)
+OBJ_C   = $(patsubst %.c,%.o,$(SRC_C))
+OBJ_CPP = $(patsubst %.cpp,%.o,$(SRC_CPP))
+SRC     = $(SRC_C) $(SRC_CPP)
+OBJ     = $(OBJ_C) $(OBJ_CPP)
 
 ###############################################################################
 # Rules
