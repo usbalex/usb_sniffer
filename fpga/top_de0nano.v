@@ -91,7 +91,8 @@ top_core
 u_core
 (
     // ULPI PHY clock (60MHz)
-    .clk_i(USB_CLK60G),
+    //.clk_i(USB_CLK60G),
+    .clk_i(clk),
     .rst_i(reset),
 
     // ULPI Interface

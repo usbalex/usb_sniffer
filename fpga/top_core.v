@@ -21,7 +21,7 @@ module top_core
 //    inout           ftdi_wr,
 //    inout           ftdi_rd,
 //    inout [7:0]     ftdi_d,
-
+ 
     // MISC
     output [7:0]    leds
 );
@@ -39,6 +39,7 @@ parameter       ISR_VECTOR          = 32'h00000010;
 // Registers / Wires
 //-----------------------------------------------------------------
 wire [7:0]  ftdi_gpio_w;
+wire [7:0]  debug_w;
 
 //-----------------------------------------------------------------
 // ULPI
@@ -131,6 +132,9 @@ u_jtag
     .mem_cyc_o(ftdi_cyc_w),
     .mem_ack_i(ftdi_ack_w),
     .mem_stall_i(ftdi_stall_w)
+
+    ,
+    .debug_o(debug_w)
 );
 
 //-----------------------------------------------------------------
@@ -274,5 +278,6 @@ assign sniffer_stall_w = 1'b0;
 // LED
 //-----------------------------------------------------------------
 assign leds = ftdi_gpio_w;
+//assign leds = debug_w;
 
 endmodule

@@ -11,7 +11,7 @@ LDFLAGS     =
 #LIBS        = -lftdi
 #LIBS        = -ljtag_atlantic -ljtag_client
 #LIBS        = -L. -ljtag_atlantic -ljtag_client
-LIBS        = -L /opt/altera/13.1/quartus/linux64 -ljtag_atlantic -ljtag_client
+LIBS        = -L /opt/altera/12.1/quartus/linux64 -ljtag_atlantic -ljtag_client
 
 ARGS       += 
 
