@@ -28,8 +28,9 @@ wire USB_CLK60G;
 clkgen_pll
 u_pll
 (
-    .CLKREF_IN(usb_clk60),
-    .CLKOUT0G(USB_CLK60G)
+	.inclk0(usb_clk60),
+	.c0(USB_CLK60G),
+	.locked()
 );
 
 //-----------------------------------------------------------------
@@ -56,31 +57,31 @@ generate
 for (i=0; i < 8; i=i+1)  
 begin: gen_buf
     IOBUF 
-    #(
-        .DRIVE(12),
-        .IOSTANDARD("DEFAULT"),
-        .SLEW("FAST")
-    )
+//    #(
+//        .DRIVE(12),
+//        .IOSTANDARD("DEFAULT"),
+//        .SLEW("FAST")
+//    )
     IOBUF_inst
     (
-        .T(usb_ulpi_dir),
-        .I(ulpi_out_w[i]),
-        .O(ulpi_in_w[i]),
-        .IO(usb_ulpi_data[i])
+        .oe(usb_ulpi_dir),
+        .datain(ulpi_out_w[i]),
+        .dataout(ulpi_in_w[i]),
+        .dataio(usb_ulpi_data[i])
     );
 end  
 endgenerate  
 
 OBUF 
-#(
-    .DRIVE(12),
-    .IOSTANDARD("DEFAULT"),
-    .SLEW("FAST")
-)
+//#(
+//    .DRIVE(12),
+//    .IOSTANDARD("DEFAULT"),
+//    .SLEW("FAST")
+//)
 OBUF_stp
 (
-    .I(ulpi_stp_w),
-    .O(usb_ulpi_stp)
+    .datain(ulpi_stp_w),
+    .dataout(usb_ulpi_stp)
 );
 
 //-----------------------------------------------------------------

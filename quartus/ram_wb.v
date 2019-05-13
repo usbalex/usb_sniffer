@@ -1,4 +1,4 @@
-// megafunction wizard: %RAM: 2-PORT%VBB%
+// megafunction wizard: %RAM: 2-PORT%
 // GENERATION: STANDARD
 // VERSION: WM1.0
 // MODULE: altsyncram 
@@ -17,6 +17,7 @@
 // 13.1.0 Build 162 10/23/2013 SJ Web Edition
 // ************************************************************
 
+
 //Copyright (C) 1991-2013 Altera Corporation
 //Your use of Altera Corporation's design tools, logic functions 
 //and other software and tools, and its AMPP partner logic 
@@ -31,6 +32,10 @@
 //Altera or its authorized distributors.  Please refer to the 
 //applicable agreement for further details.
 
+
+// synopsys translate_off
+`timescale 1 ps / 1 ps
+// synopsys translate_on
 module ram_wb (
 	address_a,
 	address_b,
@@ -74,6 +79,65 @@ module ram_wb (
 `ifndef ALTERA_RESERVED_QIS
 // synopsys translate_on
 `endif
+
+	wire [31:0] sub_wire0;
+	wire [31:0] sub_wire1;
+	wire [31:0] q_a = sub_wire0[31:0];
+	wire [31:0] q_b = sub_wire1[31:0];
+
+	altsyncram	altsyncram_component (
+				.byteena_a (byteena_a),
+				.clock0 (clock_a),
+				.clocken1 (enable_b),
+				.wren_a (wren_a),
+				.byteena_b (byteena_b),
+				.clock1 (clock_b),
+				.wren_b (wren_b),
+				.address_a (address_a),
+				.data_a (data_a),
+				.address_b (address_b),
+				.clocken0 (enable_a),
+				.data_b (data_b),
+				.q_a (sub_wire0),
+				.q_b (sub_wire1),
+				.aclr0 (1'b0),
+				.aclr1 (1'b0),
+				.addressstall_a (1'b0),
+				.addressstall_b (1'b0),
+				.clocken2 (1'b1),
+				.clocken3 (1'b1),
+				.eccstatus (),
+				.rden_a (1'b1),
+				.rden_b (1'b1));
+	defparam
+		altsyncram_component.address_reg_b = "CLOCK1",
+		altsyncram_component.byteena_reg_b = "CLOCK1",
+		altsyncram_component.byte_size = 8,
+		altsyncram_component.clock_enable_input_a = "NORMAL",
+		altsyncram_component.clock_enable_input_b = "NORMAL",
+		altsyncram_component.clock_enable_output_a = "NORMAL",
+		altsyncram_component.clock_enable_output_b = "NORMAL",
+		altsyncram_component.indata_reg_b = "CLOCK1",
+		altsyncram_component.intended_device_family = "Cyclone IV E",
+		altsyncram_component.lpm_type = "altsyncram",
+		altsyncram_component.numwords_a = 16384,
+		altsyncram_component.numwords_b = 16384,
+		altsyncram_component.operation_mode = "BIDIR_DUAL_PORT",
+		altsyncram_component.outdata_aclr_a = "NONE",
+		altsyncram_component.outdata_aclr_b = "NONE",
+		altsyncram_component.outdata_reg_a = "CLOCK0",
+		altsyncram_component.outdata_reg_b = "CLOCK1",
+		altsyncram_component.power_up_uninitialized = "FALSE",
+		altsyncram_component.read_during_write_mode_port_a = "NEW_DATA_NO_NBE_READ",
+		altsyncram_component.read_during_write_mode_port_b = "NEW_DATA_NO_NBE_READ",
+		altsyncram_component.widthad_a = 14,
+		altsyncram_component.widthad_b = 14,
+		altsyncram_component.width_a = 32,
+		altsyncram_component.width_b = 32,
+		altsyncram_component.width_byteena_a = 4,
+		altsyncram_component.width_byteena_b = 4,
+		altsyncram_component.wrcontrol_wraddress_reg_b = "CLOCK1";
+
 
 endmodule
 

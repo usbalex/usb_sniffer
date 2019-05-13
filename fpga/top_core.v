@@ -206,32 +206,67 @@ u_sniffer
 //-----------------------------------------------------------------
 // Sample RAM
 //-----------------------------------------------------------------
+//ram_wb
+//#(.BLOCK_COUNT(8))
+//u_ram
+//(
+//    // Port A
+//    .clka_i(clk_i),
+//    .rsta_i(rst_i),
+//    .stba_i(sniffer_stb_w),
+//    .wea_i(sniffer_we_w),
+//    .sela_i(sniffer_sel_w),
+//    .addra_i(sniffer_addr_w),
+//    .dataa_i(sniffer_data_w),
+//    .dataa_o(),
+//    .acka_o(sniffer_ack_w),
+//
+//    // Port B - External Port
+//    .clkb_i(clk_i),
+//    .rstb_i(rst_i),
+//    .stbb_i(mem_stb_w),
+//    .web_i(ftdi_we_w),
+//    .selb_i(ftdi_sel_w),
+//    .addrb_i(ftdi_address_w),
+//    .datab_i(ftdi_data_w),
+//    .datab_o(mem_data_r),
+//    .ackb_o(mem_ack_w)
+//);
 ram_wb
-#(.BLOCK_COUNT(8))
 u_ram
 (
     // Port A
-    .clka_i(clk_i),
-    .rsta_i(rst_i),
-    .stba_i(sniffer_stb_w),
-    .wea_i(sniffer_we_w),
-    .sela_i(sniffer_sel_w),
-    .addra_i(sniffer_addr_w),
-    .dataa_i(sniffer_data_w),
-    .dataa_o(),
-    .acka_o(sniffer_ack_w),
+    .clock_a(clk_i),
+    .enable_a(sniffer_stb_w),
+    .wren_a(sniffer_we_w),
+    .byteena_a(sniffer_sel_w),
+    .address_a(sniffer_addr_w[13:0]),
+    .data_a(sniffer_data_w),
+    .q_a(),
 
     // Port B - External Port
-    .clkb_i(clk_i),
-    .rstb_i(rst_i),
-    .stbb_i(mem_stb_w),
-    .web_i(ftdi_we_w),
-    .selb_i(ftdi_sel_w),
-    .addrb_i(ftdi_address_w),
-    .datab_i(ftdi_data_w),
-    .datab_o(mem_data_r),
-    .ackb_o(mem_ack_w)    
+    .clock_b(clk_i),
+    .enable_b(mem_stb_w),
+    .wren_b(ftdi_we_w),
+    .byteena_b(ftdi_sel_w),
+    .address_b(ftdi_address_w[13:0]),
+    .data_b(ftdi_data_w),
+    .q_b(mem_data_r)
 );
+
+reg acka_q;
+reg ackb_q;
+always @(posedge clk_i or posedge rst_i)
+    if (rst_i)
+    begin
+        acka_q  <= 1'b0;
+        ackb_q  <= 1'b0;
+    end else begin
+        acka_q  <= sniffer_stb_w;
+        ackb_q  <= mem_stb_w;
+    end
+assign sniffer_ack_w = acka_q;
+assign mem_ack_w = acka_q;
 
 assign sniffer_stall_w = 1'b0;
 
