@@ -14,7 +14,8 @@
 #define CMD_GP_RD      0x4
 
 #define HDR_SIZE       6
-#define MAX_TX_SIZE    1<<6 - HDR_SIZE
+//#define MAX_TX_SIZE    1<<6 - HDR_SIZE
+#define MAX_TX_SIZE    2048 - HDR_SIZE
 
 struct JTAGATLANTIC *jtag_link = NULL;
 
@@ -29,6 +30,10 @@ int altera_jtag_hw_init(int instance_id)
     {
         fprintf(stderr, "Unable to open altera_jtag device: %s, %x, %x.\n", "USB-Blaster", 0, instance_id);
         return -1;
+    }
+    else
+    {
+        fprintf(stdout, "Connected to altera_jtag device: %s, %x, %x.\n", "USB-Blaster", 0, instance_id);
     }
 
     // Flush buffers
@@ -124,7 +129,7 @@ int altera_jtag_hw_mem_read(uint32_t addr, uint8_t *data, int length)
             size = MAX_TX_SIZE;
 
         // Round up to nearest 4 byte multiple
-        size = (size + 3) & ~3;
+        //size = (size + 3) & ~3;
 
         // Build packet header
         p = buffer;
@@ -217,6 +222,8 @@ int altera_jtag_hw_gpio_write(uint8_t value)
         fprintf(stderr, "altera_jtag_hw_gpio_write: Failed to send\n");
         return -1;
     }
+    // Flush buffers
+    jtagatlantic_flush(jtag_link);
 
     return 0;
 }
@@ -238,6 +245,8 @@ int altera_jtag_hw_gpio_read(uint8_t *value)
         fprintf(stderr, "altera_jtag_hw_gpio_read: Failed to send\n");
         return -1;
     }
+    // Flush buffers
+    jtagatlantic_flush(jtag_link);
 
     // Poll for response
     do
@@ -256,6 +265,9 @@ int altera_jtag_hw_gpio_read(uint8_t *value)
 
 
 //int ftdi_hw_init(int interface)
+//{
+//    return altera_jtag_hw_init(interface);
+//}
 int ftdi_hw_init(void)
 {
     return altera_jtag_hw_init(-1);
@@ -286,9 +298,9 @@ int ftdi_hw_mem_read_word(uint32_t addr, uint32_t *data)
 // GPIO
 int ftdi_hw_gpio_write(uint8_t value)
 {
-    altera_jtag_hw_gpio_write(value);
+    return altera_jtag_hw_gpio_write(value);
 }
 int ftdi_hw_gpio_read(uint8_t *value)
 {
-    altera_jtag_hw_gpio_read(value);
+    return altera_jtag_hw_gpio_read(value);
 }

@@ -6,7 +6,7 @@ module top_core
     // ULPI PHY clock (60MHz)
     input           clk_i,
     input           rst_i,
-  
+
     // ULPI Interface
     input  [7:0]    ulpi_data_i,
     output [7:0]    ulpi_data_o,
@@ -14,14 +14,6 @@ module top_core
     input           ulpi_nxt_i,
     output          ulpi_stp_o,
 
-//    // FTDI
-//    inout           ftdi_rxf,
-//    inout           ftdi_txe,
-//    inout           ftdi_siwua,
-//    inout           ftdi_wr,
-//    inout           ftdi_rd,
-//    inout [7:0]     ftdi_d,
- 
     // MISC
     output [7:0]    leds
 );
@@ -39,7 +31,6 @@ parameter       ISR_VECTOR          = 32'h00000010;
 // Registers / Wires
 //-----------------------------------------------------------------
 wire [7:0]  ftdi_gpio_w;
-wire [7:0]  debug_w;
 
 //-----------------------------------------------------------------
 // ULPI
@@ -100,7 +91,7 @@ wire[3:0]   ftdi_sel_w;
 wire        ftdi_we_w;
 wire        ftdi_stb_w;
 wire        ftdi_cyc_w;
-wire        ftdi_stall_w = 1'b0;
+wire        ftdi_stall_w;
 wire        ftdi_ack_w;
 
 //ftdi_if
@@ -110,14 +101,6 @@ u_jtag
 (
     .clk_i(clk_i),
     .rst_i(rst_i),
-
-//    // FTDI (async FIFO interface)
-//    .ftdi_rxf_i(ftdi_rxf),
-//    .ftdi_txe_i(ftdi_txe),
-//    .ftdi_siwua_o(ftdi_siwua),
-//    .ftdi_wr_o(ftdi_wr),
-//    .ftdi_rd_o(ftdi_rd),
-//    .ftdi_d_io(ftdi_d),
 
     .gp_o(ftdi_gpio_w),
     .gp_i(ftdi_gpio_w),
@@ -132,9 +115,6 @@ u_jtag
     .mem_cyc_o(ftdi_cyc_w),
     .mem_ack_i(ftdi_ack_w),
     .mem_stall_i(ftdi_stall_w)
-
-    ,
-    .debug_o(debug_w)
 );
 
 //-----------------------------------------------------------------
@@ -175,7 +155,7 @@ u_sniffer
 (
     .clk_i(clk_i),
     .rst_i(rst_i),
-    
+
     // Peripheral Interface
     .addr_i(ftdi_address_w[7:0]),
     .data_i(ftdi_data_w),
@@ -244,19 +224,20 @@ u_ram
     .enable_a(sniffer_stb_w),
     .wren_a(sniffer_we_w),
     .byteena_a(sniffer_sel_w),
-    .address_a(sniffer_addr_w[13:0]),
+    .address_a(sniffer_addr_w[15:2]),
     .data_a(sniffer_data_w),
     .q_a(),
 
     // Port B - External Port
     .clock_b(clk_i),
-    .enable_b(mem_stb_w),
+    .enable_b(ftdi_cyc_w & mem_stb_w),
     .wren_b(ftdi_we_w),
     .byteena_b(ftdi_sel_w),
-    .address_b(ftdi_address_w[13:0]),
+    .address_b(ftdi_address_w[15:2]),
     .data_b(ftdi_data_w),
     .q_b(mem_data_r)
 );
+//assign mem_data_r = 32'b0;
 
 reg acka_q;
 reg ackb_q;
@@ -267,17 +248,17 @@ always @(posedge clk_i or posedge rst_i)
         ackb_q  <= 1'b0;
     end else begin
         acka_q  <= sniffer_stb_w;
-        ackb_q  <= mem_stb_w;
+        ackb_q  <= ftdi_cyc_w & mem_stb_w;
     end
-assign sniffer_ack_w = acka_q;
-assign mem_ack_w = acka_q;
+assign sniffer_ack_w  = acka_q;
+assign mem_ack_w      = ackb_q;
 
-assign sniffer_stall_w = 1'b0;
+assign sniffer_stall_w  = 1'b0;
+assign ftdi_stall_w     = 1'b0;
 
 //-----------------------------------------------------------------
 // LED
 //-----------------------------------------------------------------
 assign leds = ftdi_gpio_w;
-//assign leds = debug_w;
 
 endmodule
