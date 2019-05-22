@@ -308,6 +308,8 @@ uint32_t usb_sniffer_current(int *overflow)
         return 0;
     }
 
+//    printf("Current wr_ptr address: 0x%08x\n", current);
+
     return current;
 }
 //-----------------------------------------------------------------
@@ -362,6 +364,7 @@ int usb_sniffer_extract_buffer(FILE *f, uint32_t rd_ptr, uint32_t size)
     uint32_t data = 0;
 
     uint32_t *buffer = (uint32_t *)malloc(size);
+//    printf("Extracting packet of size: %d\n", size);
     assert(buffer);
 
     assert(!(size & 3));
@@ -394,7 +397,7 @@ int usb_sniffer_extract_buffer(FILE *f, uint32_t rd_ptr, uint32_t size)
             {
                 uint32_t len = usb_get_data_length(value);
 
-                //printf("DATA: Len %d\n", len);
+//                printf("DATA: Len %d\n", len);
 
                 // Shuffle to put control word as first word instead of last
                 for (i = 0; i < len; i+= 4)

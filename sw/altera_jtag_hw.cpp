@@ -170,6 +170,13 @@ int altera_jtag_hw_mem_read(uint32_t addr, uint8_t *data, int length)
         addr     += size;
     }
 
+//    printf("altera_jtag_hw_mem_read: Receive size: %d\n", received);
+//    printf("Data:\n");
+//    for (p = buffer; p < (buffer+received); p += 4)
+//    {
+//        printf("%08x\n", *(uint32_t*)p);
+//    }
+//    printf("\n");
     return received;
 }
 //-----------------------------------------------------------------

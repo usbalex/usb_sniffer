@@ -44,7 +44,8 @@ wire                    dmpulldown_w;
 
 wire [7:0]              utmi_data_w = 8'b0;
 wire [7:0]              utmi_data_r;
-wire                    utmi_txvalid = 1'b1;
+//wire                    utmi_txvalid = 1'b1;
+wire                    utmi_txvalid = 1'b0;
 wire                    utmi_txready;
 wire                    utmi_rxvalid;
 wire                    utmi_rxactive;
@@ -191,32 +192,7 @@ u_sniffer
 // Sample RAM
 //-----------------------------------------------------------------
 //ram_wb
-//#(.BLOCK_COUNT(8))
-//u_ram
-//(
-//    // Port A
-//    .clka_i(clk_i),
-//    .rsta_i(rst_i),
-//    .stba_i(sniffer_stb_w),
-//    .wea_i(sniffer_we_w),
-//    .sela_i(sniffer_sel_w),
-//    .addra_i(sniffer_addr_w),
-//    .dataa_i(sniffer_data_w),
-//    .dataa_o(),
-//    .acka_o(sniffer_ack_w),
-//
-//    // Port B - External Port
-//    .clkb_i(clk_i),
-//    .rstb_i(rst_i),
-//    .stbb_i(mem_stb_w),
-//    .web_i(ftdi_we_w),
-//    .selb_i(ftdi_sel_w),
-//    .addrb_i(ftdi_address_w),
-//    .datab_i(ftdi_data_w),
-//    .datab_o(mem_data_r),
-//    .ackb_o(mem_ack_w)
-//);
-ram_wb
+ram_wb_1k
 u_ram
 (
     // Port A
@@ -224,7 +200,8 @@ u_ram
     .enable_a(sniffer_stb_w),
     .wren_a(sniffer_we_w),
     .byteena_a(sniffer_sel_w),
-    .address_a(sniffer_addr_w[15:2]),
+//    .address_a(sniffer_addr_w[15:2]), // 16k
+    .address_a(sniffer_addr_w[11:2]), // 1k
     .data_a(sniffer_data_w),
     .q_a(),
 
@@ -233,11 +210,11 @@ u_ram
     .enable_b(ftdi_cyc_w & mem_stb_w),
     .wren_b(ftdi_we_w),
     .byteena_b(ftdi_sel_w),
-    .address_b(ftdi_address_w[15:2]),
+//    .address_b(ftdi_address_w[15:2]), // 16k
+    .address_b(ftdi_address_w[11:2]), // 1k
     .data_b(ftdi_data_w),
     .q_b(mem_data_r)
 );
-//assign mem_data_r = 32'b0;
 
 reg acka_q;
 reg ackb_q;
@@ -259,6 +236,8 @@ assign ftdi_stall_w     = 1'b0;
 //-----------------------------------------------------------------
 // LED
 //-----------------------------------------------------------------
-assign leds = ftdi_gpio_w;
+//assign leds = ftdi_gpio_w;
+//assign leds = {rst_i, ulpi_dir_i, ulpi_nxt_i, ulpi_stp_o, ulpi_data_i[3:0]};
+assign leds = {rst_i, ulpi_dir_i, ulpi_nxt_i, ulpi_stp_o, ftdi_gpio_w[3:0]};
 
 endmodule

@@ -52,7 +52,8 @@
 // Defines:
 //-----------------------------------------------------------------
 #define LA_BUFFER_BASE      0x00000000
-#define LA_BUFFER_SIZE      (64 * 1024)
+//#define LA_BUFFER_SIZE      (64 * 1024)
+#define LA_BUFFER_SIZE      (1 * 1024)
 
 //-----------------------------------------------------------------
 // write_usb_file
@@ -237,7 +238,8 @@ int main(int argc, char *argv[])
     usb_sniffer_match_device(dev_addr, inverse_match);
     usb_sniffer_match_endpoint(endpoint, inverse_match);
     usb_sniffer_drop_sof(disable_sof);
-    usb_sniffer_continuous_mode(0);
+//    usb_sniffer_continuous_mode(0);
+    usb_sniffer_continuous_mode(cont_mode);
     usb_sniffer_set_speed(speed);
 
     uint32_t rd_ptr = 0;
@@ -294,15 +296,27 @@ int main(int argc, char *argv[])
             // Calculate delta between rd & wr pointers
             uint32_t size;
             if (wr_ptr > rd_ptr)
+            {
+                printf("A\n");
                 size = wr_ptr - rd_ptr + 4;
+            }
             else if (wr_ptr < rd_ptr)
+            {
+                printf("O ");
+                fflush(stdout);
                 size = LA_BUFFER_SIZE - rd_ptr + wr_ptr + 4;
+            }
             else
+            {
+                printf("N ");
+                fflush(stdout);
                 size = 0;
+            }
 
             // Copy data between RD & WR pointers to capture file
             if (size != 0 && wr_ptr != last_wr)
             {
+                printf("wr_ptr address: 0x%08x -> 0x%08x (size = 0x%08x)\n", last_wr, wr_ptr, size);
                 if (usb_sniffer_extract_buffer(fout, rd_ptr, size) == -1)
                     break;
 
