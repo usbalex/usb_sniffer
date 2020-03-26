@@ -122,10 +122,12 @@ u_jtag
 // Wishbone Interface Select
 //-----------------------------------------------------------------
 wire        mem_stb_w     = ftdi_stb_w & ~ftdi_address_w[31];
+wire        mem_cyc_w     = ftdi_cyc_w & ~ftdi_address_w[31];
 wire [31:0] mem_data_r;
 wire        mem_ack_w;
 
 wire        periph_stb_w  = ftdi_stb_w & ftdi_address_w[31];
+wire        periph_cyc_w  = ftdi_cyc_w & ftdi_address_w[31];
 wire [31:0] periph_data_r;
 wire        periph_ack_w;
 
@@ -146,6 +148,7 @@ assign ftdi_ack_w   = sel_q ? periph_ack_w  : mem_ack_w;
 wire [31:0] sniffer_addr_w;
 wire [3:0]  sniffer_sel_w;
 wire [31:0] sniffer_data_w;
+wire        sniffer_cyc_w;
 wire        sniffer_we_w;
 wire        sniffer_stb_w;
 wire        sniffer_stall_w;
@@ -161,6 +164,7 @@ u_sniffer
     .addr_i(ftdi_address_w[7:0]),
     .data_i(ftdi_data_w),
     .data_o(periph_data_r),
+    .cyc_i(periph_cyc_w),
     .we_i(ftdi_we_w),
     .stb_i(periph_stb_w),
     .ack_o(periph_ack_w),
@@ -182,6 +186,7 @@ u_sniffer
     .mem_addr_o(sniffer_addr_w),
     .mem_sel_o(sniffer_sel_w),
     .mem_data_o(sniffer_data_w),
+    .mem_cyc_o(sniffer_cyc_w),
     .mem_stb_o(sniffer_stb_w),
     .mem_we_o(sniffer_we_w),
     .mem_stall_i(sniffer_stall_w),
@@ -191,27 +196,27 @@ u_sniffer
 //-----------------------------------------------------------------
 // Sample RAM
 //-----------------------------------------------------------------
-//ram_wb
-ram_wb_1k
+ram_wb
+//ram_wb_1k
 u_ram
 (
     // Port A
     .clock_a(clk_i),
-    .enable_a(sniffer_stb_w),
+    .enable_a(sniffer_cyc_w & sniffer_stb_w),
     .wren_a(sniffer_we_w),
     .byteena_a(sniffer_sel_w),
-//    .address_a(sniffer_addr_w[15:2]), // 16k
-    .address_a(sniffer_addr_w[11:2]), // 1k
+    .address_a(sniffer_addr_w[15:2]), // 16k
+//    .address_a(sniffer_addr_w[11:2]), // 1k
     .data_a(sniffer_data_w),
     .q_a(),
 
     // Port B - External Port
     .clock_b(clk_i),
-    .enable_b(ftdi_cyc_w & mem_stb_w),
+    .enable_b(mem_cyc_w & mem_stb_w),
     .wren_b(ftdi_we_w),
     .byteena_b(ftdi_sel_w),
-//    .address_b(ftdi_address_w[15:2]), // 16k
-    .address_b(ftdi_address_w[11:2]), // 1k
+    .address_b(ftdi_address_w[15:2]), // 16k
+//    .address_b(ftdi_address_w[11:2]), // 1k
     .data_b(ftdi_data_w),
     .q_b(mem_data_r)
 );
@@ -224,8 +229,8 @@ always @(posedge clk_i or posedge rst_i)
         acka_q  <= 1'b0;
         ackb_q  <= 1'b0;
     end else begin
-        acka_q  <= sniffer_stb_w;
-        ackb_q  <= ftdi_cyc_w & mem_stb_w;
+        acka_q  <= sniffer_cyc_w & sniffer_stb_w;
+        ackb_q  <= mem_cyc_w & mem_stb_w;
     end
 assign sniffer_ack_w  = acka_q;
 assign mem_ack_w      = ackb_q;
@@ -237,7 +242,7 @@ assign ftdi_stall_w     = 1'b0;
 // LED
 //-----------------------------------------------------------------
 //assign leds = ftdi_gpio_w;
-//assign leds = {rst_i, ulpi_dir_i, ulpi_nxt_i, ulpi_stp_o, ulpi_data_i[3:0]};
-assign leds = {rst_i, ulpi_dir_i, ulpi_nxt_i, ulpi_stp_o, ftdi_gpio_w[3:0]};
+assign leds = {rst_i, ulpi_dir_i, ulpi_nxt_i, ulpi_stp_o, ulpi_data_i[3:0]};
+//assign leds = {rst_i, ulpi_dir_i, ulpi_nxt_i, ulpi_stp_o, ftdi_gpio_w[3:0]};
 
 endmodule

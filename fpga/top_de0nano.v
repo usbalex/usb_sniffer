@@ -4,13 +4,13 @@
 module top_de0nano
 (
     // 50MHz clock
-    input           clk,
+//    input           clk,
 
     // LED
     output [7:0]    leds,
 
     // DIP Switches
-    input [3:0]     sw,
+//    input [3:0]     sw,
 
     // USB ULPI Interface
 //    inout           usb_clk60,
