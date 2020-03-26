@@ -389,14 +389,22 @@ int usb_sniffer_extract_buffer(FILE *f, uint32_t rd_ptr, uint32_t size)
         switch ((value >> LOG_CTRL_TYPE_L) & LOG_CTRL_CYCLE_MASK)
         {
             case LOG_CTRL_TYPE_SOF:
+                printf("    SOF\n");
+                break;
             case LOG_CTRL_TYPE_RST:
+                printf("    RST\n");
+                break;
             case LOG_CTRL_TYPE_TOKEN:
+                printf("    TOK\n");
+                break;
             case LOG_CTRL_TYPE_HSHAKE:
+                printf("    Handshake\n");
                 break;
             case LOG_CTRL_TYPE_DATA:
             {
                 uint32_t len = usb_get_data_length(value);
 
+                printf("    DATA (%04d)\n", len);
 //                printf("DATA: Len %d\n", len);
 
                 // Shuffle to put control word as first word instead of last

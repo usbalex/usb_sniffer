@@ -238,8 +238,8 @@ int main(int argc, char *argv[])
     usb_sniffer_match_device(dev_addr, inverse_match);
     usb_sniffer_match_endpoint(endpoint, inverse_match);
     usb_sniffer_drop_sof(disable_sof);
-//    usb_sniffer_continuous_mode(0);
-    usb_sniffer_continuous_mode(cont_mode);
+    usb_sniffer_continuous_mode(0);
+//    usb_sniffer_continuous_mode(cont_mode);
     usb_sniffer_set_speed(speed);
 
     uint32_t rd_ptr = 0;
@@ -327,7 +327,8 @@ int main(int argc, char *argv[])
                 last_wr = wr_ptr;
 
                 if ((data_count / 1024) != ((data_count + size) / 1024))
-                    printf("\r%dKB ", ((data_count + size) / 1024));
+                    printf("%dKB\n", ((data_count + size) / 1024));
+//                    printf("\r%dKB ", ((data_count + size) / 1024));
 
                 data_count += size;
             }
