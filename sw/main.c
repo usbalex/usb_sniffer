@@ -53,7 +53,7 @@
 //-----------------------------------------------------------------
 #define LA_BUFFER_BASE      0x00000000
 //#define LA_BUFFER_SIZE      (64 * 1024)
-#define LA_BUFFER_SIZE      (1 * 1024)
+#define LA_BUFFER_SIZE      (16 * 1024)
 
 //-----------------------------------------------------------------
 // write_usb_file
@@ -238,8 +238,7 @@ int main(int argc, char *argv[])
     usb_sniffer_match_device(dev_addr, inverse_match);
     usb_sniffer_match_endpoint(endpoint, inverse_match);
     usb_sniffer_drop_sof(disable_sof);
-    usb_sniffer_continuous_mode(0);
-//    usb_sniffer_continuous_mode(cont_mode);
+    usb_sniffer_continuous_mode(cont_mode);
     usb_sniffer_set_speed(speed);
 
     uint32_t rd_ptr = 0;

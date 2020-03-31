@@ -84,10 +84,16 @@ static int usb_file_add_time(uint32_t tic_inc)
     hdr |= (PAYLOAD_TYPE_NONE << PAYLOAD_TYPE_SHIFT);
     hdr |= (3 << PACKET_LEN_SHIFT);
 
-    packet[1] = hdr;
-    packet[0] = (tic_inc >> 4);
-    packet[3] = (tic_inc >> 12);
-    packet[2] = (tic_inc >> 20);
+    //packet[1] = hdr;
+    //packet[0] = (tic_inc >> 4);
+    //packet[3] = (tic_inc >> 12);
+    //packet[2] = (tic_inc >> 20);
+    packet[0] = hdr;
+    packet[1] = (tic_inc >> 4);
+    packet[2] = (tic_inc >> 12);
+    packet[3] = (tic_inc >> 20);
+
+    //printf("add_time: hdr=%x, pkg[0]=%x, pkg[1]=%x, pkg[2]=%x, pkg[3]=%x\n", hdr, packet[0], packet[1], packet[2], packet[3]);
 
     fwrite(packet, 1, 4, _file);
 
@@ -125,10 +131,16 @@ static int usb_file_add_rxcmd(uint32_t tic_inc, uint8_t linestate, int rx_active
     else
         rx_event = 0x2;
 
-    packet[1] = hdr;
-    packet[0] = hdr_payload;
-    packet[3] = linestate | rx_event << 4;
-    packet[2] = 0x00;
+    //packet[1] = hdr;
+    //packet[0] = hdr_payload;
+    //packet[3] = linestate | rx_event << 4;
+    //packet[2] = 0x00;
+    packet[0] = hdr;
+    packet[1] = hdr_payload;
+    packet[2] = linestate | rx_event << 4;
+    packet[3] = 0x00;
+
+    //printf("add_rxcmd: hdr=%x, pkg[0]=%x, pkg[1]=%x, pkg[2]=%x, pkg[3]=%x\n", hdr, packet[0], packet[1], packet[2], packet[3]);
 
     fwrite(packet, 1, 4, _file);
 
@@ -150,10 +162,16 @@ static int usb_file_add_data_byte(uint32_t tic_inc, uint8_t data)
 
     uint8_t packet[4];
 
-    packet[1] = hdr;
-    packet[0] = hdr_payload;
-    packet[3] = data;
-    packet[2] = 0x00;
+    //packet[1] = hdr;
+    //packet[0] = hdr_payload;
+    //packet[3] = data;
+    //packet[2] = 0x00;
+    packet[0] = hdr;
+    packet[1] = hdr_payload;
+    packet[2] = data;
+    packet[3] = 0x00;
+
+    //printf("add_data_byte: hdr=%x, pkg[0]=%x, pkg[1]=%x, pkg[2]=%x, pkg[3]=%x\n", hdr, packet[0], packet[1], packet[2], packet[3]);
 
     fwrite(packet, 1, 4, _file);
 
@@ -250,6 +268,7 @@ int usb_file_add_handshake(uint32_t value)
     uint8_t pid          = usb_get_pid(value);
     uint16_t delta_time  = usb_get_cycle_delta(value);
 
+    //printf("add_handshake: pid=%x, delta_time=%x\n", pid, delta_time);
     usb_file_add_rxcmd(delta_time, LINESTATE_IDLE, 1, 0, 0);
     usb_file_add_data_byte(1, pid);
     usb_file_add_rxcmd(1, LINESTATE_IDLE, 0, 0, 0);
@@ -265,6 +284,7 @@ int usb_file_add_data(uint32_t value, uint8_t *data, int length)
     uint8_t pid         = usb_get_pid(value);
     uint16_t delta_time = usb_get_cycle_delta(value);
 
+    //printf("add_data: pid=%x, data_len=%x\n", pid, length);
     usb_file_add_rxcmd(delta_time, LINESTATE_IDLE, 1, 0, 0);
     usb_file_add_data_byte(1, pid);
     for (i=0;i<length;i++)
